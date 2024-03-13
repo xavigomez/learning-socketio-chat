@@ -5,9 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>HTML 5 Boilerplate</title>
-        <link rel="stylesheet" href="styles/reset.css" />
+        <script type="module">
+            import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
+            const socket = io();
+        </script>
+        <link rel="stylesheet" href="./styles/reset.css" />
     </head>
     <body>
-        <h1>Chat Thingy</h1>
+        <h1>Chat Thingy with socket.io</h1>
     </body>
 </html>
