@@ -10,6 +10,12 @@
             const socket = io();
             const form = document.getElementById("message-form");
             const input = document.getElementById("message-input");
+            const messagesList = document.getElementById("messages-list");
+
+            socket.on("chat message", (msg) => {
+                const newMessage = `<li>${msg}</li>`;
+                messagesList.insertAdjacentHTML("beforeend", newMessage);
+            });
 
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
