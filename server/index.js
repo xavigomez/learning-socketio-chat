@@ -24,12 +24,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log("A user has connected.");
-
-  socket.on("disconnect", () => {
-    console.log("A user has disconnected");
-  });
 
   socket.on("chat message", async (msg) => {
     let result;
@@ -43,6 +39,25 @@ io.on("connection", (socket) => {
     }
     io.emit("chat message", msg, result.lastInsertRowid.toString());
   });
+
+  socket.on("disconnect", () => {
+    console.log("A user has disconnected");
+  });
+
+  if (!socket.recovered) {
+    try {
+      const results = await db.execute({
+        sql: "SELECT message FROM messages WHERE id > ?",
+        args: [socket.handshake.auth.serverOffset ?? 0],
+      });
+
+      results.rows.forEach((row) => {
+        socket.emit("chat message", row.message, row.id);
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 });
 
 app.use(logger("dev"));

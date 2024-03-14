@@ -7,14 +7,20 @@
         <title>HTML 5 Boilerplate</title>
         <script type="module">
             import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
-            const socket = io();
+            const socket = io({
+                auth: {
+                    serverOffset: 0,
+                },
+            });
             const form = document.getElementById("message-form");
             const input = document.getElementById("message-input");
             const messagesList = document.getElementById("messages-list");
 
-            socket.on("chat message", (msg) => {
+            socket.on("chat message", (msg, serverOffset) => {
+                console.log(msg);
                 const newMessage = `<li>${msg}</li>`;
                 messagesList.insertAdjacentHTML("beforeend", newMessage);
+                socket.auth.serverOffset = serverOffset;
             });
 
             form.addEventListener("submit", (e) => {
