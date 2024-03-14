@@ -40,6 +40,10 @@ io.on("connection", async (socket) => {
     io.emit("chat message", msg, result.lastInsertRowid.toString());
   });
 
+  socket.on("chat buzz", () => {
+    io.emit("chat buzz")
+  })
+
   socket.on("disconnect", () => {
     console.log("A user has disconnected");
   });

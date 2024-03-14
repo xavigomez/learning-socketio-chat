@@ -15,12 +15,17 @@
             const form = document.getElementById("message-form");
             const input = document.getElementById("message-input");
             const messagesList = document.getElementById("messages-list");
+            const buzz = document.getElementById("buzz");
+            const buzzSound = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
 
             socket.on("chat message", (msg, serverOffset) => {
-                console.log(msg);
                 const newMessage = `<li>${msg}</li>`;
                 messagesList.insertAdjacentHTML("beforeend", newMessage);
                 socket.auth.serverOffset = serverOffset;
+            });
+
+            socket.on("chat buzz", () => {
+                buzzSound.play();
             });
 
             form.addEventListener("submit", (e) => {
@@ -29,6 +34,10 @@
                     socket.emit("chat message", input.value);
                     input.value = "";
                 }
+            });
+        
+            buzz.addEventListener("click", () => {
+                socket.emit("chat buzz");
             });
         </script>
         <style>
@@ -50,6 +59,7 @@
                 position: fixed;
                 bottom: 0;
                 width: 100%;
+                display: flex;
             }
 
             form input {
@@ -61,9 +71,16 @@
 
             form button {
                 width: 9%;
-                background: rgb(130, 224, 255);
                 border: none;
                 padding: 10px;
+            }
+
+            form button#send {
+                background: rgb(130, 224, 255);
+            }
+
+            form button#buzz {
+                background: rgb(214, 222, 224);
             }
 
             #messages {
@@ -87,7 +104,9 @@
         <h1>Chat Thingy with socket.io</h1>
         <ul id="messages-list"></ul>
         <form id="message-form" action="">
-            <input id="message-input" autocomplete="off" /><button>➢</button>
+            <input id="message-input" autocomplete="off" />
+            <button id="buzz">🔔</button>
+            <button id="send">➡️</button>
         </form>
     </body>
 </html>
