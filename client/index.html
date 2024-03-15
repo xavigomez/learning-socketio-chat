@@ -8,24 +8,25 @@
         <script type="module">
             import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
 
-            let userName = window.localStorage.getItem("username");
+            const getUsername = () => {
+                const storedUserName = window.localStorage.getItem("username");
 
-            if (!userName) {
+                if(storedUserName) return storedUserName;
+
                 let selectedUserName;
                 do {
                     selectedUserName = prompt("Please enter your name:", "Jon Doe");
                 } while(selectedUserName === null || selectedUserName.trim() === "" );
 
                 window.localStorage.setItem("username", selectedUserName);
-                userName = selectedUserName;
-            }
 
-            console.log(userName)
+                return selectedUserName;
+            }
 
             const socket = io({
                 auth: {
                     serverOffset: 0,
-                    userName: userName
+                    userName: getUsername()
                 },
             });
             const form = document.getElementById("message-form");

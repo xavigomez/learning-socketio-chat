@@ -25,7 +25,7 @@ const server = createServer(app);
 const io = new Server(server);
 
 io.on("connection", async (socket) => {
-  console.log("A user has connected.");
+  console.log(`User "${socket.handshake.auth.userName}" has connected`);
 
   socket.on("chat message", async (msg) => {
     let result;
