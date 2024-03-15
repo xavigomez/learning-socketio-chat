@@ -41,8 +41,10 @@
             })
 
             socket.on("chat message", (msg, serverOffset, userName) => {
+                const storedUserName = window.localStorage.getItem("username");
+                const styles = userName === storedUserName ? "chat-message" : "chat-message from-others";
                 const newMessage = `
-                    <li class="chat-message">
+                    <li class="${styles}">
                         <small>${userName} says:</small>
                         <p>${msg}</p>
                     </li>
@@ -126,6 +128,17 @@
 
             .chat-message {
                 padding: 8px;
+                &.from-others {
+                    p {
+                        background: pink;
+                    }
+                    small {
+                        text-align: right;
+                        padding-right: 8px;
+                        padding-left: 0px;
+                    }
+                }
+
                 p {
                     border: 1px solid black;
                     padding: 8px;
