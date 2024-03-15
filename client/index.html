@@ -7,9 +7,25 @@
         <title>HTML 5 Boilerplate</title>
         <script type="module">
             import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
+
+            let userName = window.localStorage.getItem("username");
+
+            if (!userName) {
+                let selectedUserName;
+                do {
+                    selectedUserName = prompt("Please enter your name:", "Jon Doe");
+                } while(selectedUserName === null || selectedUserName.trim() === "" );
+
+                window.localStorage.setItem("username", selectedUserName);
+                userName = selectedUserName;
+            }
+
+            console.log(userName)
+
             const socket = io({
                 auth: {
                     serverOffset: 0,
+                    userName: userName
                 },
             });
             const form = document.getElementById("message-form");
@@ -17,6 +33,11 @@
             const messagesList = document.getElementById("messages-list");
             const buzz = document.getElementById("buzz");
             const buzzSound = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
+
+
+            socket.on("debug", (item) => {
+                console.log(item)
+            })
 
             socket.on("chat message", (msg, serverOffset) => {
                 const newMessage = `<li>${msg}</li>`;
