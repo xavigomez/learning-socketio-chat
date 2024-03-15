@@ -14,9 +14,10 @@ const db = createClient({
 });
 
 await db.execute(`
-  CREATE TABLE IF NOT EXISTS messages (
+  CREATE TABLE IF NOT EXISTS chat_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    message TEXT
+    message TEXT,
+    username TEXT
   )
 `);
 
@@ -29,15 +30,16 @@ io.on("connection", async (socket) => {
 
   socket.on("chat message", async (msg) => {
     let result;
+    const userName = socket.handshake.auth.userName;
     try {
-      result = await db.execute({
-        sql: `INSERT INTO messages (message) VALUES (:msg)`,
-        args: { msg },
+        result = await db.execute({
+        sql: `INSERT INTO chat_messages (message, username) VALUES (:msg, :userName)`,
+        args: { msg, userName },
       });
     } catch (e) {
       throw new Error(e);
     }
-    io.emit("chat message", msg, result.lastInsertRowid.toString());
+    io.emit("chat message", msg, result.lastInsertRowid.toString(), userName);
   });
 
   socket.on("chat buzz", () => {
@@ -51,12 +53,12 @@ io.on("connection", async (socket) => {
   if (!socket.recovered) {
     try {
       const results = await db.execute({
-        sql: "SELECT message FROM messages WHERE id > ?",
+        sql: "SELECT id, message, username FROM chat_messages WHERE id > ?",
         args: [socket.handshake.auth.serverOffset ?? 0],
       });
 
       results.rows.forEach((row) => {
-        socket.emit("chat message", row.message, row.id);
+        socket.emit("chat message", row.message, row.id, row.username);
       });
     } catch (e) {
       throw new Error(e);

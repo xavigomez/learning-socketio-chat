@@ -40,8 +40,13 @@
                 console.log(item)
             })
 
-            socket.on("chat message", (msg, serverOffset) => {
-                const newMessage = `<li>${msg}</li>`;
+            socket.on("chat message", (msg, serverOffset, userName) => {
+                const newMessage = `
+                    <li class="chat-message">
+                        <small>${userName} says:</small>
+                        <p>${msg}</p>
+                    </li>
+                `;
                 messagesList.insertAdjacentHTML("beforeend", newMessage);
                 socket.auth.serverOffset = serverOffset;
             });
@@ -117,6 +122,21 @@
 
             #messages li:nth-child(odd) {
                 background: #eee;
+            }
+
+            .chat-message {
+                padding: 8px;
+                p {
+                    border: 1px solid black;
+                    padding: 8px;
+                    border-radius: 16px;
+                }
+                small {
+                    margin-bottom: 4px;
+                    display: block;
+                    padding-left: 4px;
+                    font-weight: bold;
+                }
             }
         </style>
         <link rel="stylesheet" href="./styles/reset.css" />
